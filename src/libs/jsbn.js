@@ -49,7 +49,6 @@ if (!crypt.randomBytes) {
     }
 }
 
-
 // Bits per digit
 var dbits;
 
