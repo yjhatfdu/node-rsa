@@ -39,6 +39,17 @@
 var crypt = require('crypto');
 var _ = require('../utils')._;
 
+if (!crypt.randomBytes) {
+    crypt.randomBytes = function (count) {
+        var out = new Uint8Array(count);
+        for (var i = 0; i < count; i++) {
+            out[i] = Math.floor(i * Math.random());
+        }
+        return out;
+    }
+}
+
+
 // Bits per digit
 var dbits;
 
@@ -82,6 +93,7 @@ function am1(i, x, w, j, c, n) {
     }
     return c;
 }
+
 // am2 avoids a big mult-and-extract completely.
 // Max digit bits should be <= 30 because we do bitwise ops
 // on values up to 2*hdvalue^2-hdvalue-1 (< 2^31)
@@ -97,6 +109,7 @@ function am2(i, x, w, j, c, n) {
     }
     return c;
 }
+
 // Alternately, set max digit bits to 28 since some
 // browsers slow down when dealing with 32-bit numbers.
 function am3(i, x, w, j, c, n) {
@@ -151,6 +164,7 @@ for (vv = 10; vv < 36; ++vv) BI_RC[rr++] = vv;
 function int2char(n) {
     return BI_RM.charAt(n);
 }
+
 function intAt(s, i) {
     var c = BI_RC[s.charCodeAt(i)];
     return (c == null) ? -1 : c;
@@ -528,20 +542,25 @@ function bnMod(a) {
 function Classic(m) {
     this.m = m;
 }
+
 function cConvert(x) {
     if (x.s < 0 || x.compareTo(this.m) >= 0) return x.mod(this.m);
     else return x;
 }
+
 function cRevert(x) {
     return x;
 }
+
 function cReduce(x) {
     x.divRemTo(this.m, null, x);
 }
+
 function cMulTo(x, y, r) {
     x.multiplyTo(y, r);
     this.reduce(r);
 }
+
 function cSqrTo(x, r) {
     x.squareTo(r);
     this.reduce(r);
@@ -853,9 +872,11 @@ function bnToBuffer(trimOrSize) {
 function bnEquals(a) {
     return (this.compareTo(a) == 0);
 }
+
 function bnMin(a) {
     return (this.compareTo(a) < 0) ? this : a;
 }
+
 function bnMax(a) {
     return (this.compareTo(a) > 0) ? this : a;
 }
@@ -882,6 +903,7 @@ function bnpBitwiseTo(a, op, r) {
 function op_and(x, y) {
     return x & y;
 }
+
 function bnAnd(a) {
     var r = nbi();
     this.bitwiseTo(a, op_and, r);
@@ -892,6 +914,7 @@ function bnAnd(a) {
 function op_or(x, y) {
     return x | y;
 }
+
 function bnOr(a) {
     var r = nbi();
     this.bitwiseTo(a, op_or, r);
@@ -902,6 +925,7 @@ function bnOr(a) {
 function op_xor(x, y) {
     return x ^ y;
 }
+
 function bnXor(a) {
     var r = nbi();
     this.bitwiseTo(a, op_xor, r);
@@ -912,6 +936,7 @@ function bnXor(a) {
 function op_andnot(x, y) {
     return x & ~y;
 }
+
 function bnAndNot(a) {
     var r = nbi();
     this.bitwiseTo(a, op_andnot, r);
@@ -1123,12 +1148,15 @@ function bnpDAddOffset(n, w) {
 //A "null" reducer
 function NullExp() {
 }
+
 function nNop(x) {
     return x;
 }
+
 function nMulTo(x, y, r) {
     x.multiplyTo(y, r);
 }
+
 function nSqrTo(x, r) {
     x.squareTo(r);
 }
